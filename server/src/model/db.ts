@@ -1,5 +1,5 @@
 import { Pool } from 'pg'
-import { any } from 'bluebird';
+import { any } from 'bluebird'
 
 export const pool = new Pool({
     user: 'postgres',

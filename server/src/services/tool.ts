@@ -13,25 +13,25 @@ export class ToolService{
         return { message: 'Created tool!' }
     }
 
-    async findAll(){
-        const text = 'SELECT * FROM tools'
-        const query = await db.query(text)
+    async delete(id: string){
+        const text = 'DELETE * FROM tools WHERE id = $1'
+        const value = [id]
+        const query = await db.query(text, value)
 
-        if (query.rows.length === 0) {
-            return { message: 'Tools not found (find)!' }
-        } else {
-            return query.rows
+        if (query){
+            return { message: 'Tool removed!' }
         }
 
+        return { message: 'Tool not found!'}
     }
 
     async find(tag?: string){
-        if (tag) {
+        if (tag){
             const text = 'SELECT * FROM tools WHERE tags LIKE $1'
             const value = [`%${tag}%`]
             const query = await db.query(text, value)
 
-            if (query.rows.length === 0) {
+            if (query.rows.length === 0){
                 return { message: 'Tools not found (findByTag)!' }
             } else {
                 return query.rows
@@ -39,19 +39,17 @@ export class ToolService{
         } else {
             return this.findAll()
         }
-
-
     }
 
-    async delete(id: string){
-        const text = 'DELETE * FROM tools WHERE id = $1'
-        const value = [id]
-        const query = await db.query(text, value)
+    async findAll(){
+        const text = 'SELECT * FROM tools'
+        const query = await db.query(text)
 
-        if (query) {
-            return { message: 'Tool removed!' }
+        if (query.rows.length === 0){
+            return { message: 'Tools not found (find)!' }
+        } else {
+            return query.rows
         }
-
-        return { message: 'Tool not found!'}
     }
+
 }
