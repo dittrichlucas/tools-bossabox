@@ -2,10 +2,13 @@
   "name": "tools",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/index.ts"
+    "dev:init": "run-s dev:down dev:up",
+    "dev:down": "docker-compose down",
+    "dev:up": "docker-compose up -d",
+    "test": "mocha --exit -r ts-node/register/transpile-only test/**",
+    "start": "ts-node src/server.ts"
   },
   "author": "Lucas Dittrich",
   "license": "MIT",
@@ -17,7 +20,9 @@
     "express": "^4.16.4",
     "morgan": "^1.9.1",
     "pg": "^7.7.1",
-    "ramda": "^0.26.0"
+    "ramda": "^0.26.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.16"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
@@ -26,6 +31,7 @@
     "@types/morgan": "^1.7.35",
     "@types/ramda": "^0.25.41",
     "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
     "mocha": "^6.0.2",
     "mocha-typescript": "^1.1.17",
     "ts-node": "^7.0.1",

@@ -3,7 +3,7 @@ import { ToolService } from '../services/tool'
 
 const router = express.Router()
 
-const service = new ToolService
+const service = new ToolService()
 
 router.get('/', async (req, res) => {
     try {
