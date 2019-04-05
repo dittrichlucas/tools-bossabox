@@ -1,25 +1,37 @@
-import express from 'express'
+import { ServerSettings, ServerLoader, GlobalAcceptMimesMiddleware } from '@tsed/common'
+import cookieParser from 'cookie-parser'
+import methodOverride from 'method-override'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
-import connection from './db'
 import 'reflect-metadata'
-import toolRouter from './routes/tool'
-
-const app = express()
-
-app.use(morgan('dev'))
-app.use(bodyParser.json())
-
-app.use('/tools', toolRouter)
 
 
-connection.then(() =>
-    app.listen(3000, (error: any) => {
-        console.log('Server listening on port 3000.')
-        if(error){
-            console.log(`Erro ${error}`)
-        }
-    })
-)
+@ServerSettings({
+    rootDir: __dirname,
+    acceptMimes: ['application/json']
+})
+export class Server extends ServerLoader {
+    /**
+     * This method let you configure the express middleware required by your application to works.
+     * @returns {Server}
+     */
+    public $onMountingMiddlewares() {
+        this
+            .use(morgan('dev'))
+            .use(GlobalAcceptMimesMiddleware)
+            .use(cookieParser())
+            .use(methodOverride())
+            .use(bodyParser.json())
+            .use(bodyParser.urlencoded({
+                extended: true
+            }));
+    }
 
-export default app
+    public $onReady(){
+        console.log('Server started...');
+    }
+
+    public $onServerInitError(err: Error){
+        console.error(err);
+    }
+}
