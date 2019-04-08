@@ -1,4 +1,3 @@
-import express from 'express'
 import { ToolService } from '../services/tool'
 import { Controller, Get, QueryParams, Post, BodyParams, Delete, PathParams } from '@tsed/common';
 
