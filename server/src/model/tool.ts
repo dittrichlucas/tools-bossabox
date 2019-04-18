@@ -5,6 +5,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm'
+import { Required } from '@tsed/common';
 
 @Entity('tool')
 export default class Tool {
@@ -13,15 +14,18 @@ export default class Tool {
     id: string
 
     @Column('text')
+    @Required()
     title: string
 
     @Column('text')
+    @Required()
     link: string
 
     @Column('text')
     description: string
 
     @Column('text')
+    @Required()
     tags: string
 
     @CreateDateColumn({ name: 'created_at' })

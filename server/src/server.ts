@@ -5,7 +5,6 @@ import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import 'reflect-metadata'
 
-
 @ServerSettings({
     rootDir: __dirname,
     acceptMimes: ['application/json']
@@ -24,7 +23,7 @@ export class Server extends ServerLoader {
             .use(bodyParser.json())
             .use(bodyParser.urlencoded({
                 extended: true
-            }));
+            }))
     }
 
     public $onReady(){

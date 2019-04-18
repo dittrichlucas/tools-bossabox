@@ -1,5 +1,13 @@
 import { ToolService } from '../services/tool'
-import { Controller, Get, QueryParams, Post, BodyParams, Delete, PathParams } from '@tsed/common';
+import {
+    Controller,
+    Get,
+    QueryParams,
+    Post,
+    BodyParams,
+    Delete,
+    PathParams
+} from '@tsed/common'
 
 export interface Tool {
     title: string

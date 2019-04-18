@@ -1,5 +1,5 @@
 import { getManager } from 'typeorm'
-import Tool from '../model/tool';
+import Tool from '../model/tool'
 
 export class ToolService {
 
