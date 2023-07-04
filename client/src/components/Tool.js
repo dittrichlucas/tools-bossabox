@@ -5,9 +5,10 @@ import Paper from '@material-ui/core/Paper'
 import styled from 'styled-components'
 
 const Wrapper = styled(Paper)`
-    width: 100%;
+    width: 80%;
     && {
         padding: 24px;
+        margin-bottom: 15px;
     }
 `
 

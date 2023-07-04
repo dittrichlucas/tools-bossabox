@@ -1,37 +1,37 @@
-import * as TypeORM from 'typeorm'
-import config from './config'
+import { DataSource } from 'typeorm'
+import { registerProvider } from '@tsed/di'
+import Tool from './model/tool'
+import { Logger } from '@tsed/common'
 
-class AppNamingStrategy extends TypeORM.DefaultNamingStrategy {
+export const POSTGRES_DATA_SOURCE = Symbol.for('PostgresDataSource')
+export const PostgresDataSource = new DataSource({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    username: 'postgres',
+    password: '123456',
+    database: 'postgres', /* TODO: ver como adicionar um outro banco */
+    synchronize: true,
+    logging: true,
+    entities: [Tool],
+    subscribers: [],
+    migrations: [],
+})
 
-    joinColumnName(relationName: string) {
-        return relationName
+registerProvider<DataSource>({
+    provide: POSTGRES_DATA_SOURCE,
+    type: 'typeorm:datasource',
+    deps: [Logger],
+    async useAsyncFactory(logger: Logger) {
+        await PostgresDataSource.initialize()
+        
+        logger.info('Connected with TypeORM to database!')
+        
+        return PostgresDataSource
+    },
+    hooks: {
+        $onDestroy(dataSource) {
+            return dataSource.isInitialized && dataSource.destroy()
+        }
     }
-
-    joinTableColumnName(tableName: string) {
-        return tableName
-    }
-
-}
-
-const poolSize = 20
-const connectionTimeoutMillis = 30000
-
-const { db } = config
-
-export default
-    TypeORM.createConnection({
-        entities: [`${__dirname}/model/*`],
-        namingStrategy: new AppNamingStrategy(),
-        logging: db.logs ? 'all' : false,
-        extra: { max: poolSize, connectionTimeoutMillis },
-        type: 'postgres',
-        url: db.url })
-    .then(connection => {
-        const safeUrl = db.url.replace(/:.*@/, '@')
-        console.log(`Connected to ${safeUrl}`)
-
-        return connection
-    })
-    .catch(err => {
-        throw new Error(`Unable to connect to the database: ${err}`)
-    })
+})

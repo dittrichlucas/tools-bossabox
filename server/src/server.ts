@@ -1,36 +1,56 @@
-import { ServerSettings, ServerLoader, GlobalAcceptMimesMiddleware } from '@tsed/common'
-import cookieParser from 'cookie-parser'
-import methodOverride from 'method-override'
-import bodyParser from 'body-parser'
-import morgan from 'morgan'
 import 'reflect-metadata'
+import { $log, Configuration, PlatformApplication } from '@tsed/common'
+import { Inject, Injectable } from '@tsed/di'
+import { POSTGRES_DATA_SOURCE } from './db'
+import { DataSource } from 'typeorm'
+import * as bodyParser from 'body-parser'
+import * as cookieParser from 'cookie-parser'
+import * as methodOverride from 'method-override'
+import { ToolsController } from './controllers/tool'
 
-@ServerSettings({
-    rootDir: __dirname,
-    acceptMimes: ['application/json']
+@Configuration({
+    httpPort: process.env.PORT || 8083,
+    httpsPort: false,
+    acceptMimes: ['application/json'],
+    mount: {
+        '/v1': [ToolsController]
+    },
+    swagger: {
+        path: '/api-docs',
+        spec: {
+            securityDefinitions: {
+                'auth:basic': {
+                    type: 'basic'
+                }
+            }
+        }
+    }
 })
-export class Server extends ServerLoader {
-    /**
-     * This method let you configure the express middleware required by your application to works.
-     * @returns {Server}
-     */
-    public $onMountingMiddlewares() {
-        this
-            .use(morgan('dev'))
-            .use(GlobalAcceptMimesMiddleware)
-            .use(cookieParser())
-            .use(methodOverride())
+
+@Injectable()
+export class Server {
+
+    @Inject()
+    app: PlatformApplication
+
+    @Inject(POSTGRES_DATA_SOURCE)
+    protected postgresDataSource: DataSource
+
+    $beforeRoutesInit() {
+        this.app
             .use(bodyParser.json())
             .use(bodyParser.urlencoded({
                 extended: true
             }))
+            .use(cookieParser.default())
+            .use(methodOverride.default())
+
+        return null
     }
 
-    public $onReady(){
-        console.log('Server started...');
-    }
-
-    public $onServerInitError(err: Error){
-        console.error(err);
+    $onInit() {
+        if (this.postgresDataSource.isInitialized) {
+            $log.info('Database initialized!')
+        }
     }
 }

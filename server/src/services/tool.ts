@@ -1,16 +1,17 @@
-import { getManager } from 'typeorm'
+import 'reflect-metadata'
 import Tool from '../model/tool'
+import { ToolRepository } from '../repositories/tool'
 
 export class ToolService {
-
-    private readonly repository = getManager().getRepository(Tool)
-
-    async create(body: any){
-        return await this.repository.save(body)
+    
+    private readonly repository = ToolRepository
+    
+    async create(body: Tool){
+        return this.repository.save(body)
     }
 
     async delete(id: string){
-        const tool = await this.repository.findOneOrFail(id)
+        const tool = await this.repository.findOneOrFail({ where: { id } })
 
         await this.repository.remove({ ...tool })
 
@@ -19,11 +20,11 @@ export class ToolService {
 
     async find(tag?: string){
         return this.repository.createQueryBuilder('tool')
-            .where('tool.tags ILIKE :tag', { tag: `%${tag}%` })
+            .where('tags ILIKE :tag', { tag: `%${tag}%` })
             .getMany()
     }
 
-    async findAll(){
+    async findAll(): Promise<Tool[]> {
         return this.repository.find()
     }
 

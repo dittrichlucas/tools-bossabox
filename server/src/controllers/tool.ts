@@ -1,3 +1,4 @@
+import Tool from '../model/tool'
 import { ToolService } from '../services/tool'
 import {
     Controller,
@@ -6,32 +7,32 @@ import {
     Post,
     BodyParams,
     Delete,
-    PathParams
+    PathParams,
+    Inject
 } from '@tsed/common'
-
-export interface Tool {
-    title: string
-    link: string
-    description: string
-    tags: string
-}
 
 @Controller("/tools")
 export class ToolsController {
 
-    private readonly service = new ToolService()
+    @Inject(ToolService)
+    private readonly service: ToolService
 
-    @Get("/")
+    @Get('/all')
+    async getAllTools() {
+        return this.service.findAll()
+    }
+    
+    @Get()
     async getTools(@QueryParams('tag') tag: string) {
         return this.service.find(tag)
     }
 
-    @Post('/')
+    @Post()
     async createTool(@BodyParams('tool') tool: Tool) {
         return this.service.create(tool)
     }
 
-    @Delete('/')
+    @Delete()
     async deleteTool(@PathParams('id') id: string) {
         return this.service.delete(id)
     }
